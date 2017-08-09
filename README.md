@@ -14,6 +14,10 @@ I'm going to make this better. Some things to make it better:
 		Create a quick note. Should create the notes, make the header in the notes file
 		then echo the passed in string into the created file.
 		`mn -j "Just jotting something down."` should create `$DIR/jots/jot-$DATE`
+	
+
+	As an aside, I might create an install for this, to symlink to bin. 
+	Maybe ./mn --install.
 
 Options:
 	s: Subject - This should be a primary subject and directory, ex. ~/Notes/<subject>/
