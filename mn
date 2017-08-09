@@ -1,0 +1,95 @@
+#!/bin/bash
+
+DATE=`date "+%Y%m%-%H%M%S"`
+# We need to have a default direcotry, in case one isn't provided.
+DIR=~/Notes/
+
+while getopts ":s:t:S:d:b:f:" opt; do
+	case $opt in
+		s)
+			# Subject
+			SUBJECT=$OPTARG
+			echo "Subject: $SUBJECT"
+			;;
+		t)
+			#Topic
+			TOPIC=$OPTARG
+			echo "Topic: $TOPIC"
+			;;
+		S)
+			#Sync
+			SYNC=$OPTARG
+			echo "SYNC: $SYNC"
+			;;
+		d)
+			#Directory
+			DIR=$OPTARG
+			echo "DIR: $DIR"
+			;;
+		b)
+			#Browse with Vim
+			BROWSE=$OPTARG
+			echo "BROWSE: $BROWSE"
+			;;
+		f)
+			#find
+			FIND=$OPTARG
+			echo "Find: $FIND"
+			;;
+		*)
+			echo "Something is required..."
+			;;
+	esac
+done
+
+create_notes() {
+# Create the notes files and directories.
+	if [ -z $SUBJECT ] || [ -z $TOPIC ]
+	then
+		echo 'Creating notes requires both the -s and -t arguments.'
+	else
+		mkdir -p ~/Notes/${SUBJECT}
+		FILE=~/Notes/${SUBJECT}/${TOPIC}-${DATE}.md
+		touch ${FILE}
+		echo "# ${SUBJECT} -- ${TOPIC} -- ${DATE}" >> ${FILE}
+		echo "Created file: ${FILE}" 
+		vim ${FILE}
+	fi
+}
+
+list_directory() {
+# This should list the Notes directory in the terminal
+	ls -lsa $DIR
+	for i in `ls -lsa`
+	do 
+		ls -lsa $i
+	done
+}
+
+vim_files() {
+#This open Vim on the default directory top level directory so we can browse, and select which file we want to edit.
+	vim $DIR
+}
+
+sync() {
+# Synch the files to github.
+	if [ ! -d "$DIR/.git" ]
+	then
+		git init
+	else
+		git pull origin master
+		git push origin master
+	fi
+}
+
+find_notes() {
+	# Find Matching Titles
+	echo 'Matching Files: '
+	find -type f -name '*'$FIND'*'
+	
+	# Find Matching Strings
+	echo 'Matching content: '
+	grep -rn $FIND $DIR
+}
+
+#shift $((OPTIND-1))
