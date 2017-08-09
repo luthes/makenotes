@@ -1,7 +1,7 @@
 #!/bin/bash
 # Just a small script to make my notes for class.
 #touch $(echo Morality.`date "+%Y%m%d"`)
-DATE=`date "+%Y%m%d"`
+DATE=`date "+%Y%m%-%H%M%S"`
 if [ $# -ne 4 ]; then
     echo 1>&2 "$0: Incorrect syntax. ex. 'makenotes -c Class -l Lecture'"
     exit 2
@@ -25,10 +25,11 @@ elif [ $# -eq 4 ]; then
 #    echo CLASS = "${CLASS}"
 #    echo LECTURE = "${LECTURE}"
 #    echo DATE = "$DATE"
-    mkdir -p ${CLASS}
-    FILE=./${CLASS}/${LECTURE}.${DATE}
+    mkdir -p ~/Notes/${CLASS}
+    FILE=~/Notes/${CLASS}/${LECTURE}.${DATE}
     touch ${FILE}
     echo "# ${CLASS} -- ${LECTURE} -- ${DATE}" >> ${FILE}
 #TODO: Check if we're making a duplicate, if so, add time.
     echo "Created file: ${FILE}" 
+    vim ${FILE}
 fi
