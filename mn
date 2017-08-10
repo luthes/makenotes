@@ -11,13 +11,16 @@ TOPIC=''
 SYNC=''
 BROWSE=''
 FIND=''
+FILE=''
 REPO='https://github.com/luthes/makenotes/'
 HELP=$'mn - make notes - Steven Luther
 Arguments:
 	-s: subject (Required)
 	-t: topic (Required)
 	-g: git sync
+		- Be careful with this, it will push everything the directory.
 	-d: list notes in directory
+	-e: edit file if its created
 	-b: Browse directory
 	-f: find in notes titles and contents
 	-j: quick jot to $DIR/jots/'
@@ -31,13 +34,18 @@ create_notes() {
 		mkdir -p ~/Notes/$SUBJECT
 		FILE=~/Notes/$SUBJECT/$TOPIC-$DATE.md
 		touch $FILE
-		echo "# $SUBJECT -- $TOPIC -- $DATE" >> $FILE
+		echo $"# $SUBJECT -- $TOPIC -- $DATE
+----------
+
+" >> $FILE
 		echo "Created file: $FILE" 
 	fi
 }
 
 list_directory() {
 # This should list the Notes directory in the terminal
+# I don't like this. Even if ti would work, it's cluttery. I might user tree.
+# I haven't decided yet.
 	for i in $(ls -lsa)
 	do 
 		echo $i
@@ -46,7 +54,7 @@ list_directory() {
 }
 
 browse() {
-#This open Vim on the default directory top level directory so we can browse, and select which file we want to edit.
+#This opensVim on the default directory top level directory so we can browse, and select which file we want to edit.
 	vim $DIRECTORY
 }
 
@@ -57,62 +65,78 @@ sync() {
 		echo 'Initializing directory...'
 		git clone $REPO $DIRECTORY
 	else
-		(cd $DIRECTORY; git pull origin master)
-		(cd $DIRECTORY; git push origin master)
+		(cd $DIRECTORY
+			git pull origin master
+			git add *
+			git commit -m 'Automated Sync'
+			git push origin master
+			)
+	fi
+}
+
+edit() {
+	if [ ! -f $FILE ]
+	then
+		echo 'The -e flag only works when a file is being created.'
+	else
+		vim '+normal G$' +startinsert $FILE
 	fi
 }
 
 find_notes() {
 	# Find Matching Titles
-	echo 'Matching Files: '
-	find -type f -name '*'$FIND'*'
-	
+	echo 'Matched File Titles: '
+	find $DIRECTORY -not -path '/\.*' -type f -name $FIND
+
 	# Find Matching Strings
 	echo 'Matching content: '
-	grep -rn $FIND $DIRECTORY
+	grep -rn --exclude-dir='.*' --exclude '.*' $FIND $DIRECTORY
 }
 
-while getopts ":s:t:gdbfj" opt; do
+# Show help if no options passed
+if [[ ! $@ =~ ^\-.+ ]]
+then
+	echo "$HELP"
+fi
+
+#Do things for arguments
+while getopts ":s:t:gdbf:je" opt; do
 	case $opt in
 		s)
 			# Subject
 			SUBJECT=$OPTARG
-			echo "Subject: $SUBJECT"
 			;;
 		t)
 			#Topic
 			TOPIC=$OPTARG
-			echo "Topic: $TOPIC"
 			create_notes
 			;;
 		g)
 			#Sync
 			SYNC=$OPTARG
 			sync
-			echo "SYNC: $SYNC"
 			;;
 		d)
 			#Directory
 			DIRECTORY=$OPTARG
 			list_directory		
-			echo "DIRECTORY: $DIRECTORY"
+			;;
+		e)
+			#Bool - Edit file immediately.
+			edit
 			;;
 		b)
 			#Browse with Vim
 			BROWSE=$OPTARG
 			browse
-			echo "BROWSE: $BROWSE"
 			;;
 		f)
 			#find
 			FIND=$OPTARG
 			find_notes
-			echo "Find: $FIND"
 			;;
 		*)
 			echo "$HELP"
 			;;
 	esac
 done
-
-#shift $((OPTIND-1))
