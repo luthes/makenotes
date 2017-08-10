@@ -3,7 +3,7 @@ Small script to auto generate notes for class or work now that I'm out of colleg
 
 I'm going to make this better. Some things to make it better:
 	
-1. Remove the opt identifiers
+1. Remove the opt flags
 	* The command should be `mn <subject> <title>`
 2. There should be flags to sync notes to github, `mn -sync`/`mn -s`
 3. After file is created, it should be opened in Vim. 
