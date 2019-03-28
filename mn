@@ -74,12 +74,7 @@ sync() {
 }
 
 edit() {
-  if [ ! -f $FILE ]
-  then
-    $EDITOR '+normal G$' $(ls -Art ~/Notes/ | tail -n1)
-  else
-    $EDITOR '+normal G$' $FILE
-  fi
+  $EDITOR $(find ~/Notes -type f -exec stat -lt "%Y-%m-%d" {} \+ | cut -d' ' -f6- | sort -n | tail -1 | awk '{ print $2 }')
 }
 
 find_notes() {
