@@ -3,7 +3,6 @@
 # Initialize variables as empty. Some will have default values, such as directory.
 # I wouldn't change too many of these, maybe the directory if you want.
 # It'd be cool if we could upload to Google Drive, S3, or something.
-
 DATE=$(date "+%Y%m%d%H%M%S")
 DIRECTORY=~/Notes/
 SUBJECT=''
@@ -55,7 +54,7 @@ list_directory() {
 
 browse() {
 #This opensVim on the default directory top level directory so we can browse, and select which file we want to edit.
-  vim $DIRECTORY
+  $EDITOR $DIRECTORY
 }
 
 sync() {
@@ -77,9 +76,9 @@ sync() {
 edit() {
   if [ ! -f $FILE ]
   then
-    echo 'The -e flag only works when a file is being created.'
+    $EDITOR '+normal G$' $(ls -Art ~/Notes/ | tail -n1)
   else
-    vim '+normal G$' +startinsert $FILE
+    $EDITOR '+normal G$' $FILE
   fi
 }
 
