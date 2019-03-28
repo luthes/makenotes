@@ -11,6 +11,7 @@ SYNC=''
 BROWSE=''
 FIND=''
 FILE=''
+JOT=''
 REPO='https://github.com/luthes/makenotes/'
 HELP=$'mn - make notes - Steven Luther
 Arguments:
@@ -77,6 +78,18 @@ edit() {
   $EDITOR $(find ~/Notes -type f -exec stat -lt "%Y-%m-%d" {} \+ | cut -d' ' -f6- | sort -n | tail -1 | awk '{ print $2 }')
 }
 
+jot() {
+  printf "Jotting $STRING to $FILE"
+  mkdir -p $DIRECTORY/jots/
+  touch $DIRECTORY/jots/$DATE-jot
+  echo $JOT >> $DIRECTORY/jots/$DATE-jot
+}
+
+get_jots() {
+  printf "Jotting $STRING to $FILE"
+  printf ""
+}
+
 find_notes() {
   # Find Matching Titles
   echo 'Matched File Titles: '
@@ -128,6 +141,11 @@ while getopts ":s:t:gdbf:je" opt; do
       #find
       FIND=$OPTARG
       find_notes
+      ;;
+    j)
+      #find
+      JOT=$OPTARG
+      jot
       ;;
     *)
       echo "$HELP"
