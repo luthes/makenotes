@@ -23,7 +23,8 @@ Arguments:
   -e: edit file if its created
   -b: Browse directory
   -f: find in notes titles and contents
-  -j: quick jot to $DIR/jots/'
+  -j: quick jot to $DIR/jots/
+  -l: execute tree on ~/Notes directory'
 
 create_notes() {
 # Create the notes files and directories.
@@ -79,6 +80,7 @@ edit() {
 }
 
 jot() {
+  # This could be nicer.
   printf "Jotting $STRING to $FILE"
   mkdir -p $DIRECTORY/jots/
   touch $DIRECTORY/jots/$DATE-jot
@@ -86,8 +88,12 @@ jot() {
 }
 
 get_jots() {
-  printf "Jotting $STRING to $FILE"
-  printf ""
+  printf "Getting all jots"
+  for i in $(find $DIRECTORY);
+  do 
+    echo "Jot $i\n"
+    cat $i
+  done
 }
 
 find_notes() {
@@ -107,7 +113,7 @@ then
 fi
 
 #Do things for arguments
-while getopts ":s:t:gdbf:je" opt; do
+while getopts ":s:t:gdbf:jel" opt; do
   case $opt in
     s)
       # Subject
@@ -142,8 +148,12 @@ while getopts ":s:t:gdbf:je" opt; do
       FIND=$OPTARG
       find_notes
       ;;
+    l)
+      #list notes
+      tree ~/Notes
+      ;;
     j)
-      #find
+      #jots
       JOT=$OPTARG
       jot
       ;;
