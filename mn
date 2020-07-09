@@ -76,7 +76,7 @@ sync() {
 }
 
 edit() {
-  $EDITOR $(find ~/Notes -type f -exec stat -lt "%Y-%m-%d" {} \+ | cut -d' ' -f6- | sort -n | tail -1 | awk '{ print $2 }')
+  $EDITOR $(find ~/Notes -type f -print0 | xargs -0 stat --format '%Y :%y %n' | sort -nr | cut -d: -f2- | head | awk '{ print $4 }')
 }
 
 jot() {
